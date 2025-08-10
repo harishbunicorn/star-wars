@@ -32,18 +32,9 @@ api.interceptors.response.use(
 
 export const movieAPI = {
   getAllMovies: async (): Promise<Movie[]> => {
-    try {
-      const response = await api.get<Movie[]>('/films');
-      return response.data;
-    } catch (error) {
-      // Fallback to local API route if direct API fails
-      try {
-        const fallbackResponse = await axios.get<Movie[]>('/api/films');
-        return fallbackResponse.data;
-      } catch {
-        throw error; // Throw original error
-      }
-    }
+    // Use local API route to avoid CORS issues
+    const response = await axios.get<Movie[]>('/api/films');
+    return response.data;
   },
 
   getMovieById: async (id: string): Promise<Movie> => {
