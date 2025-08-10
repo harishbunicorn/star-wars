@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  # Development service
+  star-wars-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    ports:
+      - "3000:3000"
+      - "6006:6006"  # For Storybook
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - NEXT_TELEMETRY_DISABLED=1
+    command: npm run dev
+    profiles:
+      - dev
+
+  # Production service
+  star-wars-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_TELEMETRY_DISABLED=1
+    restart: unless-stopped
+    profiles:
+      - prod
+
+  # Storybook service
+  storybook:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    ports:
+      - "6006:6006"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm run storybook
+    profiles:
+      - storybook
